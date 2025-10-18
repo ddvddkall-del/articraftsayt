@@ -1,0 +1,437 @@
+<!DOCTYPE html>
+<html lang="uz">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<title>Articraft.uz — Home · Ranklar · Server Qoidalari</title>
+<meta name="description" content="Articraft.uz — O'zbek Minecraft serveri. IP: mc.articraft.uz. Donat, ranklar, qoidalar va Telegram/YouTube havolalari." />
+<meta name="keywords" content="Articraft, Minecraft, server, Articraft.uz, mc.articraft.uz, donate, ranklar, qoidalar" />
+<meta name="author" content="Articraft Team" />
+<style>
+  /* -------------------------
+     RESET & BASIC
+     ------------------------- */
+  *{box-sizing:border-box}
+  html,body{height:100%}
+  body{
+    margin:0;
+    font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+    color:#eaf2ff;
+    background: #000;
+    -webkit-font-smoothing:antialiased;
+    -moz-osx-font-smoothing:grayscale;
+  }
+
+  /* -------------------------
+     STARFIELD CANVAS (FULLSCREEN)
+     ------------------------- */
+  #starfield{
+    position:fixed;
+    inset:0;
+    z-index:0;
+    display:block;
+  }
+
+  /* -------------------------
+     WATERMARK
+     ------------------------- */
+  .watermark {
+    position:fixed;
+    top:50%;
+    left:50%;
+    transform:translate(-50%,-50%);
+    font-size:200px;
+    font-weight:900;
+    color:rgba(255,255,255,0.04);
+    letter-spacing:14px;
+    white-space:nowrap;
+    z-index:0;
+    pointer-events:none;
+    user-select:none;
+  }
+  @media (max-width:900px){
+    .watermark{font-size:110px; letter-spacing:8px}
+  }
+  @media (max-width:420px){
+    .watermark{font-size:72px; letter-spacing:6px}
+  }
+
+  /* -------------------------
+     LAYOUT (NAV + SECTIONS)
+     ------------------------- */
+  nav {
+    position:sticky;
+    top:0;
+    z-index:5;
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    gap:12px;
+    padding:12px 20px;
+    background:linear-gradient(180deg, rgba(2,6,13,0.55), rgba(2,6,13,0.2));
+    border-bottom:1px solid rgba(255,255,255,0.03);
+    backdrop-filter: blur(6px);
+  }
+  .brand {
+    font-weight:900;
+    font-size:20px;
+    background:linear-gradient(90deg,#FFD24D,#FF5A5A);
+    -webkit-background-clip:text;
+    color:transparent;
+  }
+  .nav-links{
+    display:flex;
+    gap:12px;
+    align-items:center;
+  }
+  .nav-links a {
+    color:#eaf2ff;
+    text-decoration:none;
+    font-weight:700;
+    padding:8px 10px;
+    border-radius:8px;
+  }
+  .nav-links a:hover{ background:rgba(255,255,255,0.03) }
+
+  .right-links{ display:flex; gap:10px; align-items:center; }
+  .btn {
+    padding:8px 12px;
+    border-radius:10px;
+    font-weight:800;
+    text-decoration:none;
+    color:#fff;
+  }
+  .btn-tg { background:linear-gradient(90deg,#0ea5e9,#2563eb); }
+  .btn-yt { background:linear-gradient(90deg,#ff0000,#ff4444); }
+  .btn-donate { background:linear-gradient(90deg,#FFD24D,#FF5A5A); color:#111; }
+
+  /* -------------------------
+     CONTAINER
+     ------------------------- */
+  main{
+    position:relative;
+    z-index:2; /* above watermark & canvas */
+    max-width:1100px;
+    margin:36px auto;
+    padding:0 18px 80px;
+  }
+
+  section {
+    margin-bottom:40px;
+    background:transparent;
+  }
+
+  h1,h2{ margin:0 0 14px 0; }
+  h2{ text-align:center; color:#FFD24D; font-size:26px; }
+
+  /* -------------------------
+     HOME: columns (3)
+     ------------------------- */
+  .cols{
+    display:flex;
+    gap:18px;
+    align-items:flex-start;
+    justify-content:space-between;
+    flex-wrap:wrap;
+  }
+  .card{
+    background:rgba(255,255,255,0.03);
+    border-radius:12px;
+    padding:18px;
+    flex:1 1 320px;
+    min-width:260px;
+    box-shadow:0 8px 30px rgba(2,6,14,0.6);
+  }
+  .card h3{ margin:0 0 10px 0; color:#FFD24D; }
+  .person { margin:8px 0; display:flex; justify-content:space-between; align-items:center; gap:12px; }
+  .nick { color:#fff; font-weight:800; }
+
+  /* -------------------------
+     LINKS area
+     ------------------------- */
+  .links-row { text-align:center; margin-top:18px; display:flex; gap:12px; justify-content:center; flex-wrap:wrap; }
+  .links-row a { display:inline-block; text-decoration:none; }
+
+  /* -------------------------
+     RANKS
+     ------------------------- */
+  .ranks-wrap { display:flex; gap:12px; flex-direction:column; align-items:center; }
+  .rank-row {
+    width:320px;
+    background:rgba(255,255,255,0.04);
+    border-radius:10px;
+    padding:10px 14px;
+    display:flex;
+    align-items:center;
+    gap:12px;
+    transition:transform .18s ease, box-shadow .18s ease;
+  }
+  .rank-row:hover{ transform:translateY(-4px); box-shadow:0 12px 40px rgba(0,0,0,0.6); }
+  .swatch { width:28px; height:28px; border-radius:6px; flex:0 0 28px; }
+
+  /* swatches colors per your spec */
+  .sw-imperator { background:#FFD24D; }
+  .sw-general { background:#8B4513; }
+  .sw-afsona { background:linear-gradient(90deg,#7cc35a,#FFD24D); } /* sabzi+sariq */
+  .sw-elita { background:linear-gradient(90deg,#ff79b0,#7a3cff); }
+  .sw-titan { background:#ff4d4d; }
+  .sw-alpomish { background:linear-gradient(90deg,#3b82f6,#7a3cff); }
+  .sw-ritsar { background:#3b82f6; }
+  .sw-qahramon { background:linear-gradient(90deg,#3b82f6,#27ae60); }
+  .sw-askar { background:#9ad6ff; }
+
+  /* -------------------------
+     RULES (content)
+     ------------------------- */
+  .rules {
+    background:rgba(255,255,255,0.03);
+    border-radius:12px;
+    padding:22px;
+    font-size:15.5px;
+    line-height:1.7;
+  }
+  .rules h4 {
+    margin:18px 0 8px 0;
+    color:#FFD24D;
+  }
+  .rules p { margin:6px 0; color:#e6eef8; }
+
+  /* -------------------------
+     FOOTER / small screen
+     ------------------------- */
+  @media (max-width:980px){
+    .rank-row { width:100%; max-width:520px; }
+    .card { min-width:unset; width:100%; }
+    main { padding-bottom:60px; }
+  }
+
+  @media (max-width:520px){
+    nav { padding:10px; }
+    .brand { font-size:18px; }
+    .watermark{font-size:72px}
+  }
+
+  /* small helper */
+  .muted { color:#9fb0c8; font-weight:600; }
+
+  /* smooth scroll */
+  html { scroll-behavior:smooth; }
+
+</style>
+</head>
+<body>
+
+<!-- STARFIELD CANVAS -->
+<canvas id="starfield"></canvas>
+
+<!-- WATERMARK -->
+<div class="watermark" aria-hidden="true">ARTICRAFT.UZ</div>
+
+<!-- NAV -->
+<nav>
+  <div class="brand">articraft.uz</div>
+
+  <div class="nav-links" role="navigation" aria-label="Main">
+    <a href="#home">Home</a>
+    <a href="#ranklar">Ranklar</a>
+    <a href="#rules">Server Qoidalari</a>
+  </div>
+
+  <div class="right-links">
+    <a class="btn btn-tg" href="https://t.me/articraftmc" target="_blank" rel="noopener">Telegram Guruh</a>
+  </div>
+</nav>
+
+<main>
+
+  <!-- HOME -->
+  <section id="home" aria-labelledby="home-title">
+    <h2 id="home-title">ARTICRAFT SERVER MA'LUMOTLARI</h2>
+
+    <div class="cols">
+      <div class="card" aria-labelledby="owners-title">
+        <h3 id="owners-title">Ownerlar & Adminlar</h3>
+        <div class="person"><div class="nick">0_husan_0</div><div class="muted">OWNER</div></div>
+        <div class="person"><div class="nick">0_misterio_0</div><div class="muted">OWNER</div></div>
+        <div class="person"><div class="nick">_artifact</div><div class="muted">ADMIN</div></div>
+        <div class="person"><div class="nick">Condonings</div><div class="muted">ADMIN</div></div>
+      </div>
+
+      <div class="card" aria-labelledby="mods-title">
+        <h3 id="mods-title">Moderlar</h3>
+        <div class="person"><div class="nick">Muha_PvPcmbk</div><div class="muted">ST.MODER</div></div>
+        <div class="person"><div class="nick">rashidow17</div><div class="muted">ST.MODER</div></div>
+        <div class="person"><div class="nick">SmixjoonYT</div><div class="muted">MODER</div></div>
+        <div class="person"><div class="nick">dovronbek_</div><div class="muted">MODER</div></div>
+      </div>
+
+      <div class="card" aria-labelledby="media-title">
+        <h3 id="media-title">Mediyalar</h3>
+        <div class="person"><div class="nick">ENDRUX_uzb</div><div class="muted">MEDIA</div></div>
+        <div class="person"><div class="nick">Elnurbe</div><div class="muted">MEDIA</div></div>
+        <div class="person"><div class="nick">SHOXMONEY</div><div class="muted">MEDIA</div></div>
+        <div class="person"><div class="nick">SHOXNOTFALL_</div><div class="muted">MEDIA</div></div>
+      </div>
+    </div>
+
+    <div class="links-row" aria-label="External links">
+      <a class="btn btn-tg" href="https://t.me/articraftmc" target="_blank" rel="noopener">Telegram Guruh</a>
+      <a class="btn btn-yt" href="https://www.youtube.com/@Articraftuz-o2y" target="_blank" rel="noopener">YouTube Kanal</a>
+      <a class="btn btn-donate" href="https://t.me/Articraft_admin" target="_blank" rel="noopener">Donate — Sotib olish uchun</a>
+    </div>
+  </section>
+
+  <!-- RANKS -->
+  <section id="ranklar" aria-labelledby="ranklar-title">
+    <h2 id="ranklar-title">RANKLAR (Kattadan Kichikka)</h2>
+    <div class="ranks-wrap" role="list">
+      <div class="rank-row" role="listitem"><div class="swatch sw-imperator" aria-hidden="true"></div><div style="font-weight:800">Imperator</div></div>
+      <div class="rank-row" role="listitem"><div class="swatch sw-general"></div><div style="font-weight:800">General</div></div>
+      <div class="rank-row" role="listitem"><div class="swatch sw-afsona"></div><div style="font-weight:800">Afsona</div></div>
+      <div class="rank-row" role="listitem"><div class="swatch sw-elita"></div><div style="font-weight:800">Elita</div></div>
+      <div class="rank-row" role="listitem"><div class="swatch sw-titan"></div><div style="font-weight:800">Titan</div></div>
+      <div class="rank-row" role="listitem"><div class="swatch sw-alpomish"></div><div style="font-weight:800">Alpomish</div></div>
+      <div class="rank-row" role="listitem"><div class="swatch sw-ritsar"></div><div style="font-weight:800">Ritsar</div></div>
+      <div class="rank-row" role="listitem"><div class="swatch sw-qahramon"></div><div style="font-weight:800">Qahramon</div></div>
+      <div class="rank-row" role="listitem"><div class="swatch sw-askar"></div><div style="font-weight:800">Askar</div></div>
+    </div>
+  </section>
+
+  <!-- RULES (FULL) -->
+  <section id="rules" aria-labelledby="rules-title">
+    <h2 id="rules-title">ARTICRAFT UMUMIY SERVER QOIDALARI</h2>
+    <div class="rules" role="article" aria-label="Server qoidalari">
+      <h4>1. Asosiy qoidalar</h4>
+      <p>1.1. Serverdagi barcha o‘yinchilar teng huquqli.</p>
+      <p>1.2. Har qanday chit yoki x-ray qat’iyan man etiladi. Jazo: 30 kun ban.</p>
+      <p>1.3. Serverda lag, dupe yoki bug ishlatish — cheksiz ban.</p>
+      <p>1.4. Moderator yoki admin so‘zini inkor etish — 3 kun ban.</p>
+      <p>1.5. “Qoida bilmaslik” javobgarlikdan ozod qilmaydi.</p>
+      <p>1.6. PvP paytida /spawn, /home, /tpa orqali qochish — man etilmagan.</p>
+      <p>1.7. Boshqa o‘yinchilarga ruhiy yoki moddiy zarar yetkazish — 1 kun ban.</p>
+      <p>1.8. Serverda tartib, adolat va hurmat saqlanishi shart.</p>
+      <p>1.9. Server fayli yoki sistemaga zarar yetkazish — cheksiz ban.</p>
+      <p>1.10. Admin qarori — yakuniy.</p>
+
+      <h4>2. Chat qoidalari</h4>
+      <p>2.1. So‘kinish, haqorat, diniy yoki milliy kamsitish — 5 soat mute yoki ban.</p>
+      <p>2.2. Spam, flood, CAPS bilan yozish — 2 soat mute.</p>
+      <p>2.3. Reklama, link, IP yoki boshqa server nomini yozish — cheksiz ban.</p>
+      <p>2.4. Moderator yoki adminni haqoratlash — 10 kun ban yoki mute.</p>
+      <p>2.5. Shaxsiy ma’lumot so‘rash yoki tarqatish — man etilgan.</p>
+      <p>2.6. Oila a’zolaridan so‘kinish — 3 kun ban.</p>
+      <p>2.7. Chatda faqat madaniyatli muloqot ruxsat etiladi.</p>
+
+      <h4>3. O‘yin qoidalari</h4>
+      <p>3.1. Jamoa 3 kishidan ko‘p bo‘lib PvP qilsa — 5 kun ban.</p>
+      <p>3.2. Bug, lag, dupe orqali foyda olish — cheksiz ban.</p>
+      <p>3.3. Teleport trap (chaqirib o‘ldirish) — man etilmagan.</p>
+      <p>3.4. Lag keltiruvchi qurilma yasash — ban.</p>
+      <p>3.5. Eventlarda tartibni buzish — ban.</p>
+      <p>3.6. Aldab savdo qilish — server javobgar emas.</p>
+
+      <h4>4. Akkaunt qoidalari</h4>
+      <p>4.1. O‘yinchi cheksiz akkaunt ocholadi.</p>
+      <p>4.2. Akkauntni sotish, berish yoki almashish — cheksiz ban.</p>
+      <p>4.3. Parolni hech kimga bermang, hatto admin ham so‘ramaydi.</p>
+      <p>4.4. Narsalar yo‘qolsa — o‘yinchi javobgar.</p>
+      <p>4.5. Nickda haqorat yoki reklama — cheksiz ban.</p>
+      <p>4.6. O‘g‘irlangan akkauntlar bloklanadi.</p>
+      <p>4.7. Himoya uchun /register, /login va Articraft botdan foydalaning.</p>
+
+      <h4>5. Tekshiruv (Proverka) qoidalari</h4>
+      <p>5.1. Moderator sizni avtomatik proverkaga chaqiradi.</p>
+      <p>5.2. Tekshiruvdan qochish — 30 kun ban.</p>
+      <p>5.3. Fayl yoki client yashirish — 35 kun ban.</p>
+      <p>5.4. RustDesk / AnyDesk orqali ruxsat berish shart.</p>
+      <p>5.5. Dalil topilsa — 30 kun ban.</p>
+      <p>5.6. Proverkadan qochgan — “cheater” ro‘yxatiga kiritiladi.</p>
+      <p>5.7. Moderatorga bosim yoki tahdid — cheksiz ban.</p>
+      <p>5.8. Toza o‘yinchi — tiklanadi.</p>
+      <p>5.9. Tekshiruv faqat moderator ruxsati bilan o‘tkaziladi.</p>
+
+      <h4>6. Donat qoidalari</h4>
+      <p>6.1. Donat to‘lovlari qaytarilmaydi.</p>
+      <p>6.2. Donatni sotish, berish yoki o‘tkazish — ban.</p>
+      <p>6.3. Donater ham barcha qoidalarga bo‘ysunadi.</p>
+
+      <h4>Xulosa</h4>
+      <p>Serverda tartib, hurmat va adolat — hammaning burchi. Articraft — bu o‘yin emas, bu jamoa.</p>
+    </div>
+  </section>
+
+</main>
+
+<script>
+/* -------------------------
+   STARFIELD JS
+   simple performant canvas starfield
+   ------------------------- */
+(function(){
+  const canvas = document.getElementById('starfield');
+  const ctx = canvas.getContext('2d');
+  let w = canvas.width = window.innerWidth;
+  let h = canvas.height = window.innerHeight;
+  const num = Math.round((w*h)/6000); // density
+  const stars = [];
+
+  function rand(min,max){ return Math.random()*(max-min)+min; }
+
+  class Star {
+    constructor(){
+      this.reset();
+    }
+    reset(){
+      this.x = Math.random()*w;
+      this.y = Math.random()*h;
+      this.z = rand(0.2,1.2);
+      this.size = rand(0.2,1.8);
+      this.vx = (Math.random()-0.5)*0.15*this.z;
+      this.vy = -0.02 - Math.random()*0.12*this.z;
+      this.alpha = rand(0.02,0.9)*this.z;
+    }
+    update(){
+      this.x += this.vx;
+      this.y += this.vy;
+      if(this.y < -10 || this.x < -50 || this.x > w+50) this.reset();
+    }
+    draw(){
+      ctx.beginPath();
+      ctx.fillStyle = 'rgba(255,255,255,' + (0.05*this.z + 0.1*this.alpha) + ')';
+      ctx.arc(this.x, this.y, this.size, 0, Math.PI*2);
+      ctx.fill();
+    }
+  }
+
+  function init(){
+    w = canvas.width = window.innerWidth;
+    h = canvas.height = window.innerHeight;
+    stars.length = 0;
+    for(let i=0;i<num;i++) stars.push(new Star());
+  }
+
+  function loop(){
+    ctx.clearRect(0,0,w,h);
+    // subtle gradient overlay
+    const g = ctx.createLinearGradient(0,0,0,h);
+    g.addColorStop(0,'rgba(20,26,40,0.25)');
+    g.addColorStop(1,'rgba(2,6,13,0.55)');
+    ctx.fillStyle = g;
+    ctx.fillRect(0,0,w,h);
+
+    for(let s of stars){ s.update(); s.draw(); }
+    requestAnimationFrame(loop);
+  }
+
+  window.addEventListener('resize', init);
+  init();
+  loop();
+})();
+
+/* -------------------------
+   Simple accessibility helpers
+   ------------------------- */
+/* No extra JS required; smooth CSS scroll enabled. */
+</script>
+</body>
+</html>
